@@ -167,7 +167,7 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
   <a href="#c4">04 운영 검증</a>
   <a href="#c5">05 LKF 시스템</a>
   <a href="#c6">06 Dev-Flow</a>
-  <a href="#c7">07 선정산 CSV</a>
+  <a href="#c7">07 정산 파일 수동 등록</a>
 </div></nav>
 
 <header class="hero"><div class="wrap">
@@ -759,17 +759,17 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
   <div class="case-head">
     <div class="case-no">CASE 07</div>
     <div>
-      <h2>선정산 CSV 등록 자동화 및 복구 기능</h2>
-      <div class="meta"><span>LKF Partners · Internal Admin Tool</span><span>주 1회 · CSV 5종 → 정산 테이블 5종</span><span>자체 발굴 개선</span></div>
+      <h2>정산 수동 등록 자동화 및 복구 기능</h2>
+      <div class="meta"><span>LKF Partners · Internal Admin Tool</span><span>주 1회 · 정산 테이블 5종 개발자 수동 등록</span><span>자체 발굴 개선</span></div>
     </div>
   </div>
   <div class="body">
-    <p class="judge">주간 단위로 반복되는 선정산 데이터 등록 과정에서 발생하는 수동 DB 작업과 휴먼에러 가능성을 줄이기 위해 관리자 웹 기능을 직접 설계·구현했습니다.</p>
-    <p class="prose">기존에는 5개의 정산 기준별 CSV 파일을 DB 관리 도구를 통해 개발자가 직접 테이블을 선택하고 등록했습니다. 테이블을 잘못 선택하거나 파일 구조가 맞지 않을 경우 오류가 발생할 가능성이 있었으며, 등록 이후 문제가 발생하면 해당 기간 데이터를 삭제한 뒤 다시 등록하는 방식으로 복구했습니다.</p>
+    <p class="judge">주간 단위로 반복되는 정산 데이터 등록 과정에서 발생하는 수동 DB 작업과 휴먼에러 가능성을 줄이기 위해 관리자 웹 기능을 직접 설계·구현했습니다.</p>
+    <p class="prose">기존에는 5개의 정산 기준별 데이터를 DB 관리 도구를 통해 개발자가 직접 테이블을 선택하고 수동으로 등록했습니다. 테이블을 잘못 선택하거나 파일 구조가 맞지 않을 경우 오류가 발생할 가능성이 있었으며, 등록 이후 문제가 발생하면 해당 기간 데이터를 삭제한 뒤 다시 등록하는 방식으로 복구했습니다.</p>
 
     <div class="lbl">문제</div>
     <ul class="problem">
-      <li>정산 기준별 5개 테이블에 각각 CSV 파일을 직접 등록하는 반복 업무</li>
+      <li>정산 기준별 5개 테이블에 각각 데이터를 직접 등록하는 반복 업무</li>
       <li>파일과 테이블을 잘못 매칭할 경우 등록 오류 발생 가능</li>
       <li>컬럼명을 완전히 동일하게 비교하는 방식은 작은 차이에도 등록을 막아 사용자 부담 증가</li>
       <li>테이블별 데이터 타입만으로는 충분한 구분이 어려움</li>
@@ -777,14 +777,14 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
     </ul>
 
     <div class="lbl">설계</div>
-    <p class="prose" style="margin:0 0 10px">파일명과 테이블명의 일치 여부를 기본 선택 규칙으로 사용하되, 파일명이 다르면 자동 선택하지 않고 사용자가 직접 테이블을 선택할 수 있도록 구성했습니다. CSV는 테이블별 컬럼 수로 기본 구조를 검증하고, 각 셀의 빈 값 여부와 숫자형 컬럼의 숫자 입력 여부를 확인합니다.</p>
+    <p class="prose" style="margin:0 0 10px">파일명과 테이블명의 일치 여부를 기본 선택 규칙으로 사용하되, 파일명이 다르면 자동 선택하지 않고 사용자가 직접 테이블을 선택할 수 있도록 구성했습니다. 파일 테이블별 컬럼 수로 기본 구조를 검증하고, 각 셀의 빈 값 여부와 숫자형 컬럼의 숫자 입력 여부를 확인합니다.</p>
     <p class="prose" style="margin:0 0 20px">업로드 로그 테이블을 별도로 두어 등록 이력을 확인할 수 있게 하고, 특정 정산 기간을 선택해 해당 기간의 데이터를 초기화한 뒤 다시 등록할 수 있는 복구 기능을 구현했습니다. 복구 후에는 재등록이 필요하다는 안내를 관리자 화면에서 제공합니다.</p>
     <figure>
       <div class="fig-tag"><span class="after">등록 시점 3단 검증 + 기간 초기화</span><span>웹 관리자</span></div>
       <div class="scroll">
-        <svg class="dg" viewBox="0 0 860 340" role="img" aria-label="CSV를 올리면 파일명으로 테이블을 자동 매칭하고, 불일치하면 셀렉트 박스에서 수동 선택한다. 이후 컬럼 수와 셀 값을 검증해 통과하면 정산 테이블과 업로드 로그에 적재하고, 실패하면 등록을 막는다. 복구는 로그로 업로드 여부를 확인한 뒤 해당 기간만 초기화하고 재등록을 안내한다">
+        <svg class="dg" viewBox="0 0 860 340" role="img" aria-label="파일을 올리면 파일명으로 테이블을 자동 매칭하고, 불일치하면 셀렉트 박스에서 수동 선택한다. 이후 컬럼 수와 셀 값을 검증해 통과하면 정산 테이블과 업로드 로그에 적재하고, 실패하면 등록을 막는다. 복구는 로그로 업로드 여부를 확인한 뒤 해당 기간만 초기화하고 재등록을 안내한다">
           <rect class="b" x="10" y="64" width="110" height="56" rx="4"/>
-          <text class="t-b" x="65" y="88" text-anchor="middle">CSV 5종</text>
+          <text class="t-b" x="65" y="88" text-anchor="middle">파일 5종</text>
           <text class="t-s" x="65" y="107" text-anchor="middle">주 1회 업로드</text>
           <rect class="ba" x="160" y="54" width="170" height="76" rx="4"/>
           <text class="t-m t-a" x="245" y="76" text-anchor="middle">① 테이블 매칭</text>
