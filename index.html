@@ -287,6 +287,7 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
 
     <div class="lbl">결과</div>
     <ul class="results">
+      <li>성수기 피크 시 DB 커넥션 폭주 → 서버 다운으로 이어지는 연쇄 장애 발생 → Queue 도입 후 <b>서버 안정화</b></li>
       <li>서비스 장애와 외부 수집 장애를 분리해 장애 전파 범위 축소</li>
       <li>외부 장부·업체 지원 없이 내부 데이터와 자체 도구만으로 원인 확인·복구</li>
       <li>개발자가 필요한 장애와 운영자가 처리할 예외를 분리</li>
@@ -336,43 +337,59 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
         </div>
       </figure>
       <figure>
-        <div class="fig-tag"><span class="after">After</span><span>책임별 분리 + 관계 데이터</span></div>
+        <div class="fig-tag"><span class="after">After</span><span>4단계 분리 + 관계 데이터</span></div>
         <div class="scroll">
-          <svg class="dg" viewBox="0 0 700 290" role="img" aria-label="After: 판매상품과 가격·채널 정보는 판매 영역, 관광지 상품과 이용 조건은 정산 영역에 있고, 상품 연결 테이블이 하나의 판매상품을 여러 관광지 상품에 N:M으로 연결한다">
-            <text class="t-m" x="10" y="20">판매 영역 · 결제금액 기준</text>
-            <text class="t-m" x="690" y="20" text-anchor="end">정산 영역 · 이용 기준</text>
-            <line class="zone" x1="332" y1="32" x2="332" y2="280"/>
-            <rect class="b" x="10" y="100" width="130" height="56" rx="4"/>
-            <text class="t-b" x="75" y="124" text-anchor="middle">판매상품</text>
-            <text class="t-s" x="75" y="143" text-anchor="middle">고객 판매 단위</text>
-            <rect class="b" x="10" y="214" width="130" height="56" rx="4"/>
-            <text class="t-b" x="75" y="238" text-anchor="middle">가격 · 채널</text>
-            <text class="t-s" x="75" y="257" text-anchor="middle">채널별 판매가 · 정산</text>
-            <path class="e" d="M75,156 V210" marker-end="url(#ar)"/>
-            <text class="t-m" x="83" y="188">1:N</text>
-            <rect class="ba" x="190" y="94" width="130" height="68" rx="4"/>
-            <text class="t-b" x="255" y="120" text-anchor="middle">상품 연결</text>
-            <text class="t-s t-a" x="255" y="140" text-anchor="middle">판매 ↔ 관광지 N:M</text>
-            <path class="ea" d="M140,128 H186" marker-end="url(#ara)"/>
-            <rect class="b" x="380" y="36" width="160" height="50" rx="4"/>
-            <text class="t-b" x="460" y="58" text-anchor="middle">관광지 A</text>
-            <text class="t-s" x="460" y="76" text-anchor="middle">1회 입장</text>
-            <rect class="b" x="380" y="103" width="160" height="50" rx="4"/>
-            <text class="t-b" x="460" y="125" text-anchor="middle">관광지 B</text>
-            <text class="t-s" x="460" y="143" text-anchor="middle">실제 사용 횟수</text>
-            <rect class="b" x="380" y="170" width="160" height="50" rx="4"/>
-            <text class="t-b" x="460" y="192" text-anchor="middle">관광지 C</text>
-            <text class="t-s" x="460" y="210" text-anchor="middle">회원 등록·활성화</text>
-            <path class="ea" d="M320,116 C350,116 350,61 376,61" marker-end="url(#ara)"/>
-            <path class="ea" d="M320,128 H376" marker-end="url(#ara)"/>
-            <path class="ea" d="M320,140 C350,140 350,195 376,195" marker-end="url(#ara)"/>
-            <rect class="b" x="580" y="94" width="110" height="68" rx="4"/>
-            <text class="t-b" x="635" y="120" text-anchor="middle">이용 조건</text>
-            <text class="t-s" x="635" y="140" text-anchor="middle">1회 · 다회 · 회원권</text>
-            <path class="e" d="M540,61 C560,61 560,118 576,118"/>
-            <path class="e" d="M540,128 H576" marker-end="url(#ar)"/>
-            <path class="e" d="M540,195 C560,195 560,138 576,138"/>
-            <text class="t-s" x="460" y="256" text-anchor="middle">예: 패키지 1개 → 관광지 3곳 중 일부 이용</text>
+          <svg class="dg" viewBox="0 0 860 310" role="img" aria-label="After: 판매상품에서 상품연결(유효기간·기준일 설정)을 거쳐 상품그룹(사용 수량·포인트 설정)으로, 다시 입장권 상품으로 4단계로 분리. 가격·채널은 판매상품에 1:N으로 연결">
+            <text class="t-m" x="10" y="20">판매 영역</text>
+            <text class="t-m" x="850" y="20" text-anchor="end">정산 영역 · 이용 기준</text>
+            <line class="zone" x1="185" y1="32" x2="185" y2="290"/>
+
+            <!-- 1단계: 판매상품 -->
+            <rect class="b" x="10" y="80" width="140" height="56" rx="4"/>
+            <text class="t-b" x="80" y="104" text-anchor="middle">판매상품</text>
+            <text class="t-s" x="80" y="123" text-anchor="middle">고객 판매 단위</text>
+
+            <!-- 가격·채널 (판매상품 하위) -->
+            <rect class="b" x="10" y="194" width="140" height="56" rx="4"/>
+            <text class="t-b" x="80" y="218" text-anchor="middle">가격 · 채널</text>
+            <text class="t-s" x="80" y="237" text-anchor="middle">채널별 판매가</text>
+            <path class="e" d="M80,136 V190" marker-end="url(#ar)"/>
+            <text class="t-m" x="88" y="168">1:N</text>
+
+            <!-- 2단계: 상품 연결 (설정) -->
+            <rect class="ba" x="220" y="68" width="160" height="80" rx="4"/>
+            <text class="t-b" x="300" y="94" text-anchor="middle">상품 연결</text>
+            <text class="t-s t-a" x="300" y="114" text-anchor="middle">유효기간 설정</text>
+            <text class="t-s t-a" x="300" y="132" text-anchor="middle">판매일/사용일 기준</text>
+            <path class="ea" d="M150,108 H216" marker-end="url(#ara)"/>
+
+            <!-- 3단계: 상품 그룹 (수량/포인트) -->
+            <rect class="ba" x="430" y="68" width="180" height="80" rx="4"/>
+            <text class="t-b" x="520" y="94" text-anchor="middle">상품 그룹</text>
+            <text class="t-s t-a" x="520" y="114" text-anchor="middle">사용 가능 수량 설정</text>
+            <text class="t-s t-a" x="520" y="132" text-anchor="middle">포인트 Max / 차감</text>
+            <path class="ea" d="M380,108 H426" marker-end="url(#ara)"/>
+
+            <!-- 4단계: 입장권 상품 -->
+            <rect class="b" x="660" y="40" width="160" height="50" rx="4"/>
+            <text class="t-b" x="740" y="62" text-anchor="middle">입장권 A</text>
+            <text class="t-s" x="740" y="80" text-anchor="middle">1회 입장</text>
+            <rect class="b" x="660" y="103" width="160" height="50" rx="4"/>
+            <text class="t-b" x="740" y="125" text-anchor="middle">입장권 B</text>
+            <text class="t-s" x="740" y="143" text-anchor="middle">사용 횟수 차감</text>
+            <rect class="b" x="660" y="166" width="160" height="50" rx="4"/>
+            <text class="t-b" x="740" y="188" text-anchor="middle">입장권 C</text>
+            <text class="t-s" x="740" y="206" text-anchor="middle">회원 활성화</text>
+            <path class="ea" d="M610,96 C640,96 640,65 656,65" marker-end="url(#ara)"/>
+            <path class="ea" d="M610,108 H656" marker-end="url(#ara)"/>
+            <path class="ea" d="M610,120 C640,120 640,191 656,191" marker-end="url(#ara)"/>
+
+            <!-- 단계 라벨 -->
+            <text class="t-s" x="80" y="280" text-anchor="middle">1단계</text>
+            <text class="t-s" x="300" y="280" text-anchor="middle">2단계</text>
+            <text class="t-s" x="520" y="280" text-anchor="middle">3단계</text>
+            <text class="t-s" x="740" y="280" text-anchor="middle">4단계</text>
+            <text class="t-s" x="430" y="260" text-anchor="middle">유형 추가 = 테이블 수정 없이 관계·조건 데이터로 표현</text>
           </svg>
         </div>
       </figure>
@@ -383,9 +400,9 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
     <ul class="results">
       <li>설계 결함으로 인한 치명적 정산 사고 <b>0건</b></li>
       <li>퇴사까지 약 <b>4년</b>간 핵심 정산 구조 변경 없이 운영, 현재 <b>5년+</b></li>
-      <li>판매상품 · 가격/채널 · 관광지 상품 · 관계 · 이용 조건으로 책임 분리</li>
+      <li>판매상품 → 상품연결 → 상품그룹 → 입장권의 <b>4단계</b>로 책임 분리</li>
       <li>하나의 판매상품을 여러 관광지 상품에 연결하는 패키지 표현</li>
-      <li>상품 속성과 조합을 코드가 아닌 데이터로 표현</li>
+      <li>유효기간, 사용 수량, 포인트 차감 등 조건을 코드가 아닌 데이터로 표현</li>
       <li>판매가격 변경과 정산 기준 변경의 상호 결합도 제거</li>
     </ul>
   </div>
@@ -468,8 +485,8 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
 
     <div class="lbl">결과</div>
     <ul class="results">
-      <li>제휴처별 개별 API 개발 → 판매처용·사용처용 공통 API 2종 기반 연동으로 전환</li>
-      <li>규격 → 연동 → 검증 → 오류 대응까지 반복 업무 축소</li>
+      <li>제휴처별 개별 API 개발 → 공통 API <b>2종</b>으로 전환, 신규 연동 시 추가 개발 제거</li>
+      <li>QA 검증 메일 <b>5~8회 왕복</b>(최소 1~2일, 최대 5일+) → QA 페이지 <b>셀프 검증</b>으로 전환</li>
       <li>반복 테스트에 쓰던 개발 시간을 신규 연동·시스템 개발로 전환</li>
       <li>공통 API 명세와 연동 방법 직접 문서화</li>
     </ul>
@@ -486,7 +503,7 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
     </div>
   </div>
   <div class="body">
-    <div class="lbl">트랜잭션 대기열 폭발 → DB 기반 비동기 큐</div>
+    <div class="lbl">DB 커넥션 폭주 → 서버 다운 연쇄 장애 → DB 기반 비동기 큐로 안정화</div>
     <figure>
       <div class="fig-tag"><span class="before">Before</span><span>주문과 후처리가 같은 흐름</span></div>
       <div class="scroll">
@@ -535,7 +552,7 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
           <text class="t-s t-a" x="630" y="146" text-anchor="middle">서비스 장애 → 복구 후 큐에서 이어 처리</text>
         </svg>
       </div>
-      <figcaption>피크 부하는 큐가 흡수하고, 두 서버 중 한쪽이 멈춰도 다른 쪽과 미처리 작업은 살아남습니다. 1번 케이스의 API 서버 분리와 결합되어 장애 영역만 복구하는 운영이 실제로 가능했습니다.</figcaption>
+      <figcaption>성수기 피크 시 동시 트랜잭션이 DB 커넥션 한계를 초과하여 DB 응답 지연 → 서버 요청 체류 → 서버 다운으로 이어지는 연쇄 장애가 발생했습니다. Queue 도입 후 피크 부하는 큐가 흡수하고, 서버 안정화를 확보했습니다. 1번 케이스의 API 서버 분리와 결합되어 장애 영역만 복구하는 운영이 실제로 가능했습니다.</figcaption>
     </figure>
 
     <div class="lbl">외부 API 타임아웃 미설정 → 공통 정책</div>
@@ -662,11 +679,11 @@ figcaption{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.6
 
     <div class="lbl">결과</div>
     <ul class="results">
+      <li>기술 부채 개선: 1:N 쿼리 약 <b>30건</b>을 JOIN 통합, 관계 테이블 <b>2종</b> 신설, 불필요 컬럼 <b>3개</b> DROP, 운영 마이그레이션 <b>7단계</b> 분리 적용</li>
       <li>대용량 수집·통계를 서비스와 물리적으로 분리해 서비스 영향 최소화</li>
       <li>ClickHouse 기반 OLAP 환경으로 향후 집계·그래프 요구 대비</li>
-      <li>서버 하나로 작게 시작하되, 스키마 분할로 확장 시 서버 분리 경로 확보</li>
+      <li>서버 하나로 작게 시작하되, <b>3개</b> 스키마 분할로 확장 시 분리 경로 확보</li>
       <li>공통코드 기반 모델로 플랫폼·상태·유형 하드코딩 최소화</li>
-      <li>테이블 정의·관리 규칙까지 표준화</li>
       <li>AI 모델·프롬프트의 코드 의존도를 낮춰 교체·설정 변경에 대응</li>
     </ul>
   </div>
